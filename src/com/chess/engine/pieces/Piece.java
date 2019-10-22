@@ -2,7 +2,8 @@ package com.chess.engine.pieces;
 import com.chess.engine.Alliance;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.Move;
-import java.util.List;
+
+import java.util.Collection;
 
 public abstract class Piece {
     protected final int piecePosition;
@@ -13,7 +14,7 @@ public abstract class Piece {
         this.piecePosition = piecePosition;
     }
 
-    public abstract List<Move> calculateLegalMoves(final Board board);
+    public abstract Collection<Move> calculateLegalMoves(final Board board);
 
     public Alliance getPieceAlliance() {
         return this.pieceAlliance;
