@@ -27,6 +27,14 @@ public abstract class Player {
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
 
+    public King getPlayerKing(){
+        return this.playerKing;
+    }
+
+    public Collection<Move> getLegalMoves(){
+        return this.legalMoves;
+    }
+
     private static Collection<Move> calculateAttacksOnTile(int piecePosition, Collection<Move> moves) {
         final List<Move> attackMoves = new ArrayList<>();
         for(final Move move : moves){
@@ -46,7 +54,7 @@ public abstract class Player {
         throw new RuntimeException("Not a valid board!");
     }
 
-    public boolean isLegalMove(Move move){
+    public boolean isMoveLegal(Move move){
         return this.legalMoves.contains(move);
     }
     public boolean isInCheck(){
@@ -64,7 +72,16 @@ public abstract class Player {
         return false;
     }
     public MoveTransition makeMove(final Move move){
-        return null;
+        if(!isMoveLegal(move)){
+            return new MoveTransition(this.board, move, MoveStatus.ILLEGAL_MOVE);
+        }
+        final Board transitionBoard = move.execute();
+        final Collection<Move> kingAttacks = Player.calculateAttacksOnTile(transitionBoard.currentPlayer().getOpponent().getPlayerKing().getPiecePosition(),
+                transitionBoard.currentPlayer().getLegalMoves());
+        if(!kingAttacks.isEmpty()){
+            return new MoveTransition(this.board, move, MoveStatus.LEAVES_PLAYER_IN_CHECK);
+        }
+        return new MoveTransition(transitionBoard, move, MoveStatus.DONE);
     }
     protected boolean hasEscapeMoves() {
         for(final Move move : this.legalMoves){
