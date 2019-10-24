@@ -5,6 +5,7 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.pieces.Piece;
+import com.chess.engine.pieces.Rook;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ public class BlackPlayer extends Player {
     }
 
     @Override
-    protected Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentLegals) {
+    protected Collection<Move> calculateKingCastles(final Collection<Move> playerLegals,
+                                                    final Collection<Move> opponentLegals) {
         final List<Move> kingCastles = new ArrayList<>();
         if(this.playerKing.isFirstMove() && !this.isInCheck()){
             //white king side castle
@@ -44,8 +46,13 @@ public class BlackPlayer extends Player {
                     if(Player.calculateAttacksOnTile(5, opponentLegals).isEmpty() &&
                             Player.calculateAttacksOnTile(6, opponentLegals).isEmpty() &&
                             rookTile.getPiece().getPieceType().isRook()){
-                        //more work
-                        kingCastles.add(null);
+                        kingCastles.add(new Move.KingSideCastleMove(
+                                this.board,
+                                this.playerKing,
+                                6,
+                                (Rook)rookTile.getPiece(),
+                                rookTile.getTileCoordinate(),
+                                5));
                     }
                 }
             }
@@ -54,8 +61,13 @@ public class BlackPlayer extends Player {
                     !this.board.getTile(3).isTileOccupied()){
                 final Tile rookTile = this.board.getTile(0);
                 if(rookTile.isTileOccupied() && rookTile.getPiece().isFirstMove()){
-                    //more work
-                    kingCastles.add(null);
+                    kingCastles.add(new Move.QueenSideCastleMove(
+                            this.board,
+                            this.playerKing,
+                            2,
+                            (Rook)rookTile.getPiece(),
+                            rookTile.getTileCoordinate(),
+                            3));
                 }
             }
         }
